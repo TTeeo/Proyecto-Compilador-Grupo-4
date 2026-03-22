@@ -15,6 +15,8 @@ terminal OPEN_BRACKET;
 terminal CLOSE_BRACKET;
 terminal OPEN_BRACE;
 terminal CLOSE_BRACE;
+terminal OPEN_PARENTHESIS;
+terminal CLOSE_PARENTHESIS;
 terminal INTEGER_CONSTANT;
 terminal FLOAT_CONSTANT;
 terminal STRING_CONSTANT;
@@ -25,9 +27,20 @@ terminal INIT;
 terminal FLOAT;
 terminal INT;
 terminal STRING;
-
-
-
+terminal GREATER;
+terminal GREATER_OR_EQUAL;
+terminal LESS;
+terminal LESS_OR_EQUAL;
+terminal EQUAL;
+terminal NOT_EQUAL;
+terminal WHILE;
+terminal IF;
+terminal ELSE;
+terminal WRITE;
+terminal READ; 
+terminal NOT;
+terminal AND;
+terminal OR;
 
 
 // Non Terminals
@@ -43,6 +56,17 @@ non terminal variable_declaration_list;
 non terminal variable_declaration;
 non terminal variable_list;
 non terminal data_type;
+non terminal read_function;
+non terminal write_function;
+non terminal comparation_operator;
+non terminal logic_operator;
+non terminal simple_condition;
+non terminal multiple_condition;
+non terminal not_condition;
+non terminal condition;
+non terminal while_block;
+non terminal if_block;
+non terminal if_else_block;
 
 // Start Symbol Definition
 start with program;
@@ -54,12 +78,18 @@ sentence_list ::= sentence;
 
 sentence ::= init_block;
 sentence ::= assignment;
+sentence ::= if_block;
+sentence ::= if_else_block;
+sentence ::= while_block;
+sentence ::= read_function;
+sentence ::= write_function;
 
 assignment ::= IDENTIFIER ASSIG expression {: System.out.println("Assignment"); :};
 
 
 
 /*--------------------Arithmetic Expression----------------------------*/
+
 expression ::= expression PLUS term {: System.out.println("+"); :};
 expression ::= expression SUB term {: System.out.println("-"); :};
 expression ::= term {: System.out.println("Expression = Term"); :};
@@ -72,12 +102,12 @@ factor ::= IDENTIFIER:id  {: System.out.println("Id: " + id); :};
 factor ::= INTEGER_CONSTANT:constant {: System.out.println("Constant: " + constant ); :};
 factor ::= FLOAT_CONSTANT:constant {: System.out.println("Constant: " + constant ); :};
 factor ::= STRING_CONSTANT:constant {: System.out.println("Constant: " + constant ); :};
-factor ::= OPEN_BRACKET expression CLOSE_BRACKET {: System.out.println("Factor = (Expression)"); :};
-
+factor ::= OPEN_PARENTHESIS expression CLOSE_PARENTHESIS {: System.out.println("Factor = (Expression)"); :};
 
 
 
 /*-------------------Init Block---------------------------------------*/
+
 init_block ::= INIT OPEN_BRACE variable_declaration_list CLOSE_BRACE;
 
 variable_declaration_list ::= variable_declaration_list variable_declaration;
@@ -92,8 +122,42 @@ data_type ::= INT;
 data_type ::= STRING;
 
 
+/*--------------------Read--------------------------------------------*/
+
+read_function ::= READ OPEN_PARENTHESIS IDENTIFIER CLOSE_PARENTHESIS;
+
+/*--------------------Write--------------------------------------------*/
+
+write_function ::= WRITE OPEN_PARENTHESIS expression CLOSE_PARENTHESIS;
+
+/*--------------------Conditions--------------------------------------------*/
+
+comparation_operator ::= EQUAL;
+comparation_operator ::= NOT_EQUAL;
+comparation_operator ::= GREATER;
+comparation_operator ::= GREATER_OR_EQUAL;
+comparation_operator ::= LESS;
+comparation_operator ::= LESS_OR_EQUAL;
+
+logic_operator ::= OR;
+logic_operator ::= AND;
+
+simple_condition ::= expression comparation_operator expression;
+multiple_condition ::= simple_condition logic_operator simple_condition;
+not_condition ::= NOT simple_condition;
+
+condition ::= simple_condition;
+condition ::= multiple_condition;
+condition ::= not_condition;
+
+/*--------------------While--------------------------------------------*/
+
+while_block ::= WHILE OPEN_PARENTHESIS condition CLOSE_PARENTHESIS OPEN_BRACE sentence_list CLOSE_BRACE;
+
+/*--------------------If--------------------------------------------*/
+
+if_block ::= IF OPEN_PARENTHESIS condition CLOSE_PARENTHESIS OPEN_BRACE sentence_list CLOSE_BRACE;
+if_else_block ::= IF OPEN_PARENTHESIS condition CLOSE_PARENTHESIS OPEN_BRACE sentence_list CLOSE_BRACE ELSE OPEN_BRACE sentence_list CLOSE_BRACE;
 
 
-
-
-
+/*--------------------Special Functions--------------------------------------------*/
