@@ -13,27 +13,87 @@ terminal MULT;
 terminal DIV;
 terminal OPEN_BRACKET;
 terminal CLOSE_BRACKET;
+terminal OPEN_BRACE;
+terminal CLOSE_BRACE;
 terminal INTEGER_CONSTANT;
+terminal FLOAT_CONSTANT;
+terminal STRING_CONSTANT;
 terminal IDENTIFIER;
+terminal COMMA;
+terminal COLON;
+terminal INIT;
+terminal FLOAT;
+terminal INT;
+terminal STRING;
+
+
+
+
 
 // Non Terminals
+non terminal program;
 non terminal sentence;
+non terminal sentence_list;
 non terminal assignment;
 non terminal expression;
 non terminal term;
 non terminal factor;
+non terminal init_block;
+non terminal variable_declaration_list;
+non terminal variable_declaration;
+non terminal variable_list;
+non terminal data_type;
 
 // Start Symbol Definition
-start with sentence;
+start with program;
 
-sentence ::= assignment {: System.out.println("End"); :};
+program ::= sentence_list;
+
+sentence_list ::= sentence_list sentence;
+sentence_list ::= sentence;
+
+sentence ::= init_block;
+sentence ::= assignment;
+
 assignment ::= IDENTIFIER ASSIG expression {: System.out.println("Assignment"); :};
+
+
+
+/*--------------------Arithmetic Expression----------------------------*/
 expression ::= expression PLUS term {: System.out.println("+"); :};
 expression ::= expression SUB term {: System.out.println("-"); :};
 expression ::= term {: System.out.println("Expression = Term"); :};
+
 term ::= term MULT factor {: System.out.println("*"); :};
 term ::= term DIV factor {: System.out.println("/"); :};
 term ::= factor {: System.out.println("Term = factor"); :};
+
 factor ::= IDENTIFIER:id  {: System.out.println("Id: " + id); :};
 factor ::= INTEGER_CONSTANT:constant {: System.out.println("Constant: " + constant ); :};
+factor ::= FLOAT_CONSTANT:constant {: System.out.println("Constant: " + constant ); :};
+factor ::= STRING_CONSTANT:constant {: System.out.println("Constant: " + constant ); :};
 factor ::= OPEN_BRACKET expression CLOSE_BRACKET {: System.out.println("Factor = (Expression)"); :};
+
+
+
+
+/*-------------------Init Block---------------------------------------*/
+init_block ::= INIT OPEN_BRACE variable_declaration_list CLOSE_BRACE;
+
+variable_declaration_list ::= variable_declaration_list variable_declaration;
+variable_declaration_list ::= variable_declaration;
+
+variable_declaration ::= variable_list COLON data_type;
+
+variable_list ::= variable_list COMMA IDENTIFIER;
+variable_list ::= IDENTIFIER;
+data_type ::= FLOAT; 
+data_type ::= INT;
+data_type ::= STRING;
+
+
+
+
+
+
+

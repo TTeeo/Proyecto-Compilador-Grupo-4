@@ -10,4 +10,8 @@ public class UnknownCharacterException extends CompilerException {
   public UnknownCharacterException(String unknownInput) {
     super("Unknown character « " + unknownInput + " »");
   }
+
+  public UnknownCharacterException(String unknownInput, int rowNumber, int colNumber) {
+    super("Unknown character « " + unknownInput + " » at row: " + rowNumber + ", col: " +colNumber );
+  }
 }
