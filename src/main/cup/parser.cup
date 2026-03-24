@@ -1,6 +1,10 @@
 package lyc.compiler;
 
 import java_cup.runtime.*;
+import lyc.compiler.files.SymbolTableManager;
+import java.util.ArrayList;
+import java.util.List;
+import lyc.compiler.files.DataType;
 
 class Parser;
 
@@ -20,7 +24,7 @@ terminal CLOSE_PARENTHESIS;
 terminal INTEGER_CONSTANT;
 terminal FLOAT_CONSTANT;
 terminal STRING_CONSTANT;
-terminal IDENTIFIER;
+terminal String IDENTIFIER;
 terminal COMMA;
 terminal COLON;
 terminal INIT;
@@ -52,10 +56,10 @@ non terminal expression;
 non terminal term;
 non terminal factor;
 non terminal init_block;
-non terminal variable_declaration_list;
-non terminal variable_declaration;
-non terminal variable_list;
-non terminal data_type;
+non terminal identifier_declaration_list;
+non terminal identifier_declaration;
+non terminal List<String> identifier_list;
+non terminal DataType data_type;
 non terminal read_function;
 non terminal write_function;
 non terminal comparation_operator;
@@ -106,20 +110,30 @@ factor ::= OPEN_PARENTHESIS expression CLOSE_PARENTHESIS {: System.out.println("
 
 
 
-/*-------------------Init Block---------------------------------------*/
+/*--------------------Init Block---------------------------------------*/
 
-init_block ::= INIT OPEN_BRACE variable_declaration_list CLOSE_BRACE;
+init_block ::= INIT OPEN_BRACE identifier_declaration_list CLOSE_BRACE;
 
-variable_declaration_list ::= variable_declaration_list variable_declaration;
-variable_declaration_list ::= variable_declaration;
+identifier_declaration_list ::= identifier_declaration_list identifier_declaration;
+identifier_declaration_list ::= identifier_declaration;
 
-variable_declaration ::= variable_list COLON data_type;
+identifier_declaration ::= identifier_list:list_ids COLON data_type:type {:
+    for(String id : list_ids){
+        SymbolTableManager.insertInTable(id, type);
+    }
+:};
 
-variable_list ::= variable_list COMMA IDENTIFIER;
-variable_list ::= IDENTIFIER;
-data_type ::= FLOAT; 
-data_type ::= INT;
-data_type ::= STRING;
+identifier_list ::= identifier_list:list_ids COMMA IDENTIFIER:id {:
+    list_ids.add(id);
+    RESULT = list_ids;
+:};
+identifier_list ::= IDENTIFIER:id {:
+    RESULT = new ArrayList<String>();
+    RESULT.add(id);
+:};
+data_type ::= FLOAT {: RESULT = DataType.FLOAT; :}; 
+data_type ::= INT {: RESULT = DataType.INTEGER; :};
+data_type ::= STRING {: RESULT = DataType.STRING; :};
 
 
 /*--------------------Read--------------------------------------------*/

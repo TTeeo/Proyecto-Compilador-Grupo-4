@@ -5,6 +5,7 @@ import lyc.compiler.ParserSym;
 import lyc.compiler.model.*;
 import static lyc.compiler.constants.Constants.*;
 
+
 %%
 
 %public
@@ -132,9 +133,15 @@ StringConstant = \"[\x20-\x7E]*\"
   /* identifiers */
   {Identifier}                              { return symbol(ParserSym.IDENTIFIER, yytext()); }
   /* Constants */
-  {IntegerConstant}                         { return symbol(ParserSym.INTEGER_CONSTANT, yytext()); }
+  {IntegerConstant}                         { return symbol(ParserSym.INTEGER_CONSTANT, yytext());}
+
   {FloatConstant}                           { return symbol(ParserSym.FLOAT_CONSTANT, yytext()); }
-  {StringConstant}                          { return symbol(ParserSym.STRING_CONSTANT, yytext()); }
+  {StringConstant}                          { 
+                                              if(yytext().length() > MAX_STRING_CONSTANT_LENGTH)
+                                                throw new InvalidLengthException("El string detectado excede la cantidad de caracteres maxima.");
+                                                
+                                              return symbol(ParserSym.STRING_CONSTANT, yytext()); 
+                                            }
 
 
 
