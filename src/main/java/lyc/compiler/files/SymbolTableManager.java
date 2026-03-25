@@ -10,21 +10,28 @@ public final class SymbolTableManager {
 
     private SymbolTableManager() {}
 
+
     public static boolean existsInTable(String name){
         return symbols.containsKey(name);
     }
 
+    //Verificar que pasa cuando quiero agregar una constante string "_5" si es la tabla ya existe una constante entera "_5",
+    //pero que ambos representan tokens diferentes
+    public static String buildConstantKey(String name, DataType dataType){
+        return "_" + dataType.toString() + "_" + name;
+    }
+
+
     //Insertar para Constantes
-    public static void insertInTable(String name, DataType dataType, Object value){
-      
-        if(!existsInTable(name)){
-            SymbolEntry symbol = new SymbolEntry(name, dataType, value);
+    public static void insertConstantInTable(String name, DataType dataType, Object value){
+        if(!existsInTable(buildConstantKey(name, dataType))){
+            SymbolEntry symbol = new SymbolEntry(buildConstantKey(name, dataType), dataType, value);
             symbols.put(name, symbol);
         }
     }
 
     //Insertar para Identificadores
-    public static void insertInTable(String name, DataType dataType) throws DuplicatedIdentifierException{
+    public static void insertIdentifierInTable(String name, DataType dataType) throws DuplicatedIdentifierException{
         if(!existsInTable(name)){
             SymbolEntry symbol = new SymbolEntry(name, dataType);
             symbols.put(name, symbol);

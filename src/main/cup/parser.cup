@@ -5,6 +5,7 @@ import lyc.compiler.files.SymbolTableManager;
 import java.util.ArrayList;
 import java.util.List;
 import lyc.compiler.files.DataType;
+import lyc.compiler.model.UnknownIdentifierException;
 
 class Parser;
 
@@ -21,9 +22,9 @@ terminal OPEN_BRACE;
 terminal CLOSE_BRACE;
 terminal OPEN_PARENTHESIS;
 terminal CLOSE_PARENTHESIS;
-terminal INTEGER_CONSTANT;
-terminal FLOAT_CONSTANT;
-terminal STRING_CONSTANT;
+terminal String INTEGER_CONSTANT;
+terminal String FLOAT_CONSTANT;
+terminal String STRING_CONSTANT;
 terminal String IDENTIFIER;
 terminal COMMA;
 terminal COLON;
@@ -102,12 +103,30 @@ term ::= term MULT factor {: System.out.println("*"); :};
 term ::= term DIV factor {: System.out.println("/"); :};
 term ::= factor {: System.out.println("Term = factor"); :};
 
-factor ::= IDENTIFIER:id  {: System.out.println("Id: " + id); :};
-factor ::= INTEGER_CONSTANT:constant {: System.out.println("Constant: " + constant ); :};
-factor ::= FLOAT_CONSTANT:constant {: System.out.println("Constant: " + constant ); :};
-factor ::= STRING_CONSTANT:constant {: System.out.println("Constant: " + constant ); :};
-factor ::= OPEN_PARENTHESIS expression CLOSE_PARENTHESIS {: System.out.println("Factor = (Expression)"); :};
+factor ::= IDENTIFIER:id  {: 
+    System.out.println("Id: " + id); 
+    if( !SymbolTableManager.existsInTable(id) ){
+        throw new UnknownIdentifierException("La variable: " + id + " no fue declarada");
+    }
+:};
 
+factor ::= INTEGER_CONSTANT:constant {: 
+    System.out.println("Constant: " + constant );
+    SymbolTableManager.insertConstantInTable(constant, DataType.INTEGER, Integer.parseInt(constant));
+:};
+factor ::= FLOAT_CONSTANT:constant {: 
+    System.out.println("Constant: " + constant ); 
+    SymbolTableManager.insertConstantInTable(constant, DataType.FLOAT, Float.parseFloat(constant));
+:};
+factor ::= STRING_CONSTANT:constant {:
+    System.out.println("Constant: " + constant );
+    String strWithouthQuotes = constant.substring(1, constant.length()-1);
+    SymbolTableManager.insertConstantInTable(strWithouthQuotes, DataType.STRING, strWithouthQuotes);
+:};
+factor ::= OPEN_PARENTHESIS expression CLOSE_PARENTHESIS {: System.out.println("Factor = (Expression)"); :};
+factor ::= SUB factor:operand {:
+
+:};
 
 
 /*--------------------Init Block---------------------------------------*/
@@ -119,7 +138,7 @@ identifier_declaration_list ::= identifier_declaration;
 
 identifier_declaration ::= identifier_list:list_ids COLON data_type:type {:
     for(String id : list_ids){
-        SymbolTableManager.insertInTable(id, type);
+        SymbolTableManager.insertIdentifierInTable(id, type);
     }
 :};
 

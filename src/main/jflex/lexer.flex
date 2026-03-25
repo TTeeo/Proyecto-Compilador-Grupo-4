@@ -4,7 +4,7 @@ import java_cup.runtime.Symbol;
 import lyc.compiler.ParserSym;
 import lyc.compiler.model.*;
 import static lyc.compiler.constants.Constants.*;
-
+import java.math.BigInteger;
 
 %%
 
@@ -133,15 +133,18 @@ StringConstant = \"[\x20-\x7E]*\"
   /* identifiers */
   {Identifier}                              { return symbol(ParserSym.IDENTIFIER, yytext()); }
   /* Constants */
-  {IntegerConstant}                         { return symbol(ParserSym.INTEGER_CONSTANT, yytext());}
+  {IntegerConstant}                         { 
+                                              BigInteger value = new BigInteger(yytext());
+
+                                              if (value.compareTo(BigInteger.valueOf(Short.MAX_VALUE + 1)) > 0) {
+                                                  throw new InvalidIntegerException("El numero ingresado: " + yytext() + ", excede el tamaño permitido.");
+                                              }
+                                              return symbol(ParserSym.INTEGER_CONSTANT, yytext());
+                                            }
+
 
   {FloatConstant}                           { return symbol(ParserSym.FLOAT_CONSTANT, yytext()); }
-  {StringConstant}                          { 
-                                              if(yytext().length() > MAX_STRING_CONSTANT_LENGTH)
-                                                throw new InvalidLengthException("El string detectado excede la cantidad de caracteres maxima.");
-                                                
-                                              return symbol(ParserSym.STRING_CONSTANT, yytext()); 
-                                            }
+  {StringConstant}                          { return symbol(ParserSym.STRING_CONSTANT, yytext()); }
 
 
 
