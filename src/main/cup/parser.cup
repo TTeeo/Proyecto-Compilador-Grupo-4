@@ -5,7 +5,8 @@ import lyc.compiler.files.SymbolTableManager;
 import java.util.ArrayList;
 import java.util.List;
 import lyc.compiler.files.DataType;
-import lyc.compiler.model.UnknownIdentifierException;
+import lyc.compiler.model.*;
+
 
 class Parser;
 
@@ -22,8 +23,8 @@ terminal OPEN_BRACE;
 terminal CLOSE_BRACE;
 terminal OPEN_PARENTHESIS;
 terminal CLOSE_PARENTHESIS;
-terminal String INTEGER_CONSTANT;
-terminal String FLOAT_CONSTANT;
+terminal int INTEGER_CONSTANT;
+terminal float FLOAT_CONSTANT;
 terminal String STRING_CONSTANT;
 terminal String IDENTIFIER;
 terminal COMMA;
@@ -46,7 +47,7 @@ terminal READ;
 terminal NOT;
 terminal AND;
 terminal OR;
-
+terminal LONG;
 
 // Non Terminals
 non terminal program;
@@ -72,6 +73,10 @@ non terminal condition;
 non terminal while_block;
 non terminal if_block;
 non terminal if_else_block;
+non terminal Integer long_function;
+non terminal Integer list;
+non terminal Integer list_factor;
+
 
 // Start Symbol Definition
 start with program;
@@ -93,7 +98,22 @@ assignment ::= IDENTIFIER ASSIG expression {: System.out.println("Assignment"); 
 
 
 
-/*--------------------Arithmetic Expression----------------------------*/
+/*-------------------- Arithmetic Expressions --------------------
+
+Pendientes de validación semántica:
+
+1. Verificación de compatibilidad de operandos
+   - Controlar que los operandos de una expresión aritmética sean compatibles.
+   - No debe permitirse operar valores de tipo String con Int o Float.
+
+2. Inferencia del tipo resultante de la expresión
+   - Determinar el tipo de dato resultante según los tipos de los operandos.
+       * Int  + Int   -> Int
+       * Int  + Float -> Float
+       * Float+ Float -> Float
+
+----------------------------------------------------------------*/
+
 
 expression ::= expression PLUS term {: System.out.println("+"); :};
 expression ::= expression SUB term {: System.out.println("-"); :};
@@ -111,22 +131,38 @@ factor ::= IDENTIFIER:id  {:
 :};
 
 factor ::= INTEGER_CONSTANT:constant {: 
+
+    /*
+    * Validación de overflow en constantes enteras (short).
+    *
+    * Math.abs(Short.MIN_VALUE) = 32768, pero este valor no es representable como short (máximo: 32767).
+    *
+    * Solo -32768 es válido, 32768 produce overflow.
+    */
+
+    if( Math.abs(Short.MIN_VALUE) == constant ){
+        throw new InvalidNumberException("El numero: "+ Math.abs(Short.MIN_VALUE) + ", produce un overflow en numeros enteros de 2 bytes.");
+    }
+        
+    
     System.out.println("Constant: " + constant );
-    SymbolTableManager.insertConstantInTable(constant, DataType.INTEGER, Integer.parseInt(constant));
+
+    SymbolTableManager.insertConstantInTable(constant, DataType.INTEGER);
 :};
 factor ::= FLOAT_CONSTANT:constant {: 
     System.out.println("Constant: " + constant ); 
-    SymbolTableManager.insertConstantInTable(constant, DataType.FLOAT, Float.parseFloat(constant));
+    SymbolTableManager.insertConstantInTable(constant, DataType.FLOAT);
 :};
 factor ::= STRING_CONSTANT:constant {:
     System.out.println("Constant: " + constant );
-    String strWithouthQuotes = constant.substring(1, constant.length()-1);
-    SymbolTableManager.insertConstantInTable(strWithouthQuotes, DataType.STRING, strWithouthQuotes);
+    SymbolTableManager.insertConstantInTable(constant, DataType.STRING);
+:};
+
+factor ::= long_function:lf {:
+    //RESULT = lf;
 :};
 factor ::= OPEN_PARENTHESIS expression CLOSE_PARENTHESIS {: System.out.println("Factor = (Expression)"); :};
-factor ::= SUB factor:operand {:
-
-:};
+factor ::= SUB factor:operand;
 
 
 /*--------------------Init Block---------------------------------------*/
@@ -175,13 +211,14 @@ comparation_operator ::= LESS_OR_EQUAL;
 logic_operator ::= OR;
 logic_operator ::= AND;
 
+condition ::= simple_condition;
+condition ::= multiple_condition;
+condition ::= not_condition;
+
 simple_condition ::= expression comparation_operator expression;
 multiple_condition ::= simple_condition logic_operator simple_condition;
 not_condition ::= NOT simple_condition;
 
-condition ::= simple_condition;
-condition ::= multiple_condition;
-condition ::= not_condition;
 
 /*--------------------While--------------------------------------------*/
 
@@ -192,5 +229,10 @@ while_block ::= WHILE OPEN_PARENTHESIS condition CLOSE_PARENTHESIS OPEN_BRACE se
 if_block ::= IF OPEN_PARENTHESIS condition CLOSE_PARENTHESIS OPEN_BRACE sentence_list CLOSE_BRACE;
 if_else_block ::= IF OPEN_PARENTHESIS condition CLOSE_PARENTHESIS OPEN_BRACE sentence_list CLOSE_BRACE ELSE OPEN_BRACE sentence_list CLOSE_BRACE;
 
-
 /*--------------------Special Functions--------------------------------------------*/
+
+long_function ::= LONG OPEN_PARENTHESIS OPEN_BRACKET list:l CLOSE_BRACKET CLOSE_PARENTHESIS {: RESULT = l; :};
+list ::= list_factor {: RESULT = 1; :};
+list ::= list:l COMMA list_factor {: RESULT = l + 1; :};
+list_factor ::= expression;
+

@@ -16,14 +16,15 @@ public final class SymbolTableManager {
     }
 
     //Verificar que pasa cuando quiero agregar una constante string "_5" si es la tabla ya existe una constante entera "_5",
-    //pero que ambos representan tokens diferentes
+    //pero que ambos representan contenidos diferentes.
     public static String buildConstantKey(String name, DataType dataType){
         return "_" + dataType.toString() + "_" + name;
     }
 
 
     //Insertar para Constantes
-    public static void insertConstantInTable(String name, DataType dataType, Object value){
+    public static void insertConstantInTable(Object value, DataType dataType){
+        String name = value.toString();
         if(!existsInTable(buildConstantKey(name, dataType))){
             SymbolEntry symbol = new SymbolEntry(buildConstantKey(name, dataType), dataType, value);
             symbols.put(name, symbol);

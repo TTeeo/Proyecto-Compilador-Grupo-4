@@ -4,7 +4,6 @@ import java_cup.runtime.Symbol;
 import lyc.compiler.ParserSym;
 import lyc.compiler.model.*;
 import static lyc.compiler.constants.Constants.*;
-import java.math.BigInteger;
 
 %%
 
@@ -36,7 +35,6 @@ InputCharacter = [^\r\n]
 Identation =  [ \t\f]
 
 
-
 Init = "init"
 Float = "Float"
 Int = "Int"
@@ -49,6 +47,7 @@ Else = "else"
 Not = "NOT"
 Or = "OR"
 And = "AND"
+Long = "long"
 
 OpenComment = "#+"
 CloseComment = "+#"
@@ -104,7 +103,8 @@ StringConstant = \"[\x20-\x7E]*\"
   {Not}                                     { return symbol(ParserSym.NOT); }
   {Or}                                      { return symbol(ParserSym.OR); }
   {And}                                     { return symbol(ParserSym.AND); }
-
+  {Long}                                    { return symbol(ParserSym.LONG); }
+  
    /* operators */
   {Greater}                                 { return symbol(ParserSym.GREATER); }
   {GreaterOrEqual}                          { return symbol(ParserSym.GREATER_OR_EQUAL); }
@@ -131,20 +131,50 @@ StringConstant = \"[\x20-\x7E]*\"
 
 
   /* identifiers */
-  {Identifier}                              { return symbol(ParserSym.IDENTIFIER, yytext()); }
+  {Identifier}                              { 
+                                              if( yytext().length() > MAX_IDENTIFIER_LENGTH ){
+                                                throw new InvalidFormatException("El identificador ingresado: " + yytext() + ", excede la longitud permitida.");
+                                              }
+                                              return symbol(ParserSym.IDENTIFIER, yytext()); 
+                                            }
   /* Constants */
   {IntegerConstant}                         { 
-                                              BigInteger value = new BigInteger(yytext());
-
-                                              if (value.compareTo(BigInteger.valueOf(Short.MAX_VALUE + 1)) > 0) {
-                                                  throw new InvalidIntegerException("El numero ingresado: " + yytext() + ", excede el tamaño permitido.");
+                                              int valor;
+                                              try{
+                                                valor = Integer.parseInt(yytext());
                                               }
-                                              return symbol(ParserSym.INTEGER_CONSTANT, yytext());
+                                              catch( NumberFormatException e){
+                                                throw new InvalidNumberException("El numero ingresado: " + yytext() + ", excede el rango permitido para un entero de 2 bytes.");
+                                              }
+
+                                              //Dejo pasar el numero 32768 ya que puede parsearse como negativo.
+                                              if (valor > Short.MAX_VALUE + 1) {
+                                                throw new InvalidFormatException(
+                                                    "El numero ingresado: " + yytext() + " excede el rango permitido para un entero de 2 bytes.");
+                                              }
+                                              return symbol(ParserSym.INTEGER_CONSTANT, valor);
                                             }
 
 
-  {FloatConstant}                           { return symbol(ParserSym.FLOAT_CONSTANT, yytext()); }
-  {StringConstant}                          { return symbol(ParserSym.STRING_CONSTANT, yytext()); }
+  {FloatConstant}                           { 
+                                              float valor;
+                                              try{
+                                                valor = Float.parseFloat(yytext());
+                                              }
+                                              catch( NumberFormatException e){
+                                                throw new InvalidNumberException("El numero ingresado: " + yytext() + ", excede el rango permitido para float.");
+                                              }
+                                              return symbol(ParserSym.FLOAT_CONSTANT, valor); 
+                                            }
+
+  {StringConstant}                          { 
+                                              String lexema = yytext().substring(1, yytext().length() - 1);
+
+                                              if( yytext().length() > MAX_STRING_CONSTANT_LENGTH ){
+                                                throw new InvalidStringException("El string: "+yytext()+" excede la longitud permitida.");
+                                              }
+                                              return symbol(ParserSym.STRING_CONSTANT, lexema); 
+                                            }
 
 
 

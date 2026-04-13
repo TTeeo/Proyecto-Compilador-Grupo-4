@@ -12,9 +12,9 @@
 #+-----------------Init----------------+#
 
 init {
-    a1, b1 : Float
-    variable1 : Int
-    p1, p2, p3 : String
+    a, a1, b1 : Float
+    variable1, c, x, y, z: Int
+    p1, p2, p3, b, var1 : String
 }
 
 #+-----------------Arithmetic----------------+#
@@ -89,4 +89,13 @@ while (a > b)
 {
     write("a es mas grande que b")
     a := a + 1
+}
+
+
+#+-----------------Long Function----------------+#
+
+
+if (long([1+2, 3*4, x, y+z]) > 3) 
+{
+    write("lista es mas grande que 3")
 }

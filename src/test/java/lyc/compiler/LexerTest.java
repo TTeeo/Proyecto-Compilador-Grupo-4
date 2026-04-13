@@ -1,10 +1,8 @@
 package lyc.compiler;
 
 import lyc.compiler.factories.LexerFactory;
-import lyc.compiler.model.CompilerException;
-import lyc.compiler.model.InvalidIntegerException;
-import lyc.compiler.model.InvalidLengthException;
-import lyc.compiler.model.UnknownCharacterException;
+import lyc.compiler.model.*;
+
 import org.apache.commons.text.CharacterPredicates;
 import org.apache.commons.text.RandomStringGenerator;
 import org.junit.jupiter.api.AfterEach;
@@ -14,7 +12,8 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 
 import static com.google.common.truth.Truth.assertThat;
-import static lyc.compiler.constants.Constants.MAX_LENGTH;
+import static lyc.compiler.constants.Constants.MAX_IDENTIFIER_LENGTH;
+import static lyc.compiler.constants.Constants.MAX_STRING_CONSTANT_LENGTH;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 
@@ -32,7 +31,7 @@ public class LexerTest {
 
   @Test
   public void invalidStringConstantLength() {
-    assertThrows(InvalidLengthException.class, () -> {
+    assertThrows(InvalidStringException.class, () -> {
       scan("\"%s\"".formatted(getRandomString()));
       nextToken();
     });
@@ -40,7 +39,7 @@ public class LexerTest {
 
   @Test
   public void invalidIdLength() {
-    assertThrows(InvalidLengthException.class, () -> {
+    assertThrows(InvalidStringException.class, () -> {
       scan(getRandomString());
       nextToken();
     });
@@ -48,7 +47,7 @@ public class LexerTest {
 
   @Test
   public void invalidPositiveIntegerConstantValue() {
-    assertThrows(InvalidIntegerException.class, () -> {
+    assertThrows(InvalidNumberException.class, () -> {
       scan("%d".formatted(9223372036854775807L));
       nextToken();
     });
@@ -56,7 +55,7 @@ public class LexerTest {
 
   @Test
   public void invalidNegativeIntegerConstantValue() {
-    assertThrows(InvalidIntegerException.class, () -> {
+    assertThrows(InvalidNumberException.class, () -> {
       scan("%d".formatted(-9223372036854775807L));
       nextToken();
     });
@@ -105,7 +104,7 @@ public class LexerTest {
     return new RandomStringGenerator.Builder()
             .filteredBy(CharacterPredicates.LETTERS)
             .withinRange('a', 'z')
-            .build().generate(MAX_LENGTH * 2);
+            .build().generate(MAX_IDENTIFIER_LENGTH * 2);
   }
 
 }
