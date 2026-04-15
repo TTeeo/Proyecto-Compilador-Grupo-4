@@ -10,7 +10,7 @@ public class SymbolTableGenerator implements FileGenerator{
     
     @Override
     public void generate(FileWriter fileWriter) throws IOException {
-        fileWriter.write(String.format("%-15s  %-10s  %-50s  %-10s\n",
+        fileWriter.write(String.format("%-60s  %-10s  %-50s  %-10s\n",
                 "NOMBRE", "TIPODATO", "VALOR", "LONGITUD"));
 
         String name, type, value, length;
@@ -30,7 +30,7 @@ public class SymbolTableGenerator implements FileGenerator{
                 length = "-";
             
             
-            fileWriter.write(String.format("%-15s  %-10s  %-50s  %-10s\n",
+            fileWriter.write(String.format("%-60s  %-10s  %-50s  %-10s\n",
                     name, type, value, length));
         }
     }

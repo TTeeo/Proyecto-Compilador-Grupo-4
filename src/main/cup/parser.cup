@@ -16,7 +16,7 @@ terminal ASSIG;
 terminal PLUS;
 terminal SUB;
 terminal MULT;
-terminal DIV;
+terminal DIVIDE;
 terminal OPEN_BRACKET;
 terminal CLOSE_BRACKET;
 terminal OPEN_BRACE;
@@ -48,6 +48,8 @@ terminal NOT;
 terminal AND;
 terminal OR;
 terminal LONG;
+terminal MOD;
+terminal DIV;
 
 // Non Terminals
 non terminal program;
@@ -120,8 +122,12 @@ expression ::= expression SUB term {: System.out.println("-"); :};
 expression ::= term {: System.out.println("Expression = Term"); :};
 
 term ::= term MULT factor {: System.out.println("*"); :};
-term ::= term DIV factor {: System.out.println("/"); :};
+term ::= term DIVIDE factor {: System.out.println("/"); :};
 term ::= factor {: System.out.println("Term = factor"); :};
+
+//MOD/DIV Special theme
+term ::= term MOD factor;
+term ::= term DIV factor;
 
 factor ::= IDENTIFIER:id  {: 
     System.out.println("Id: " + id); 
@@ -161,6 +167,8 @@ factor ::= STRING_CONSTANT:constant {:
 factor ::= long_function:lf {:
     //RESULT = lf;
 :};
+
+
 factor ::= OPEN_PARENTHESIS expression CLOSE_PARENTHESIS {: System.out.println("Factor = (Expression)"); :};
 factor ::= SUB factor:operand;
 
@@ -229,10 +237,13 @@ while_block ::= WHILE OPEN_PARENTHESIS condition CLOSE_PARENTHESIS OPEN_BRACE se
 if_block ::= IF OPEN_PARENTHESIS condition CLOSE_PARENTHESIS OPEN_BRACE sentence_list CLOSE_BRACE;
 if_else_block ::= IF OPEN_PARENTHESIS condition CLOSE_PARENTHESIS OPEN_BRACE sentence_list CLOSE_BRACE ELSE OPEN_BRACE sentence_list CLOSE_BRACE;
 
-/*--------------------Special Functions--------------------------------------------*/
+/*--------------------Long Function--------------------------------------------*/
 
 long_function ::= LONG OPEN_PARENTHESIS OPEN_BRACKET list:l CLOSE_BRACKET CLOSE_PARENTHESIS {: RESULT = l; :};
 list ::= list_factor {: RESULT = 1; :};
 list ::= list:l COMMA list_factor {: RESULT = l + 1; :};
 list_factor ::= expression;
 
+
+
+/*--------------------Long Function--------------------------------------------*/

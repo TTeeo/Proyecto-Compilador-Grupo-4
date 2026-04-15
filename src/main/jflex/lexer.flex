@@ -48,6 +48,8 @@ Not = "NOT"
 Or = "OR"
 And = "AND"
 Long = "long"
+Div = "DIV"
+Mod = "MOD"
 
 OpenComment = "#+"
 CloseComment = "+#"
@@ -60,7 +62,7 @@ NotEqual = "!="
 Plus = "+"
 Mult = "*"
 Sub = "-"
-Div = "/"
+Divide = "/"
 Assig = ":="
 OpenParenthesis = "("
 CloseParenteshis = ")"
@@ -104,6 +106,8 @@ StringConstant = \"[\x20-\x7E]*\"
   {Or}                                      { return symbol(ParserSym.OR); }
   {And}                                     { return symbol(ParserSym.AND); }
   {Long}                                    { return symbol(ParserSym.LONG); }
+  {Mod}                                     { return symbol(ParserSym.MOD); }
+  {Div}                                     { return symbol(ParserSym.DIV); }
   
    /* operators */
   {Greater}                                 { return symbol(ParserSym.GREATER); }
@@ -117,7 +121,7 @@ StringConstant = \"[\x20-\x7E]*\"
   {Plus}                                    { return symbol(ParserSym.PLUS); }
   {Sub}                                     { return symbol(ParserSym.SUB); }
   {Mult}                                    { return symbol(ParserSym.MULT); }
-  {Div}                                     { return symbol(ParserSym.DIV); }
+  {Divide}                                  { return symbol(ParserSym.DIVIDE); }
   {Assig}                                   { return symbol(ParserSym.ASSIG); }
   {OpenBracket}                             { return symbol(ParserSym.OPEN_BRACKET); }
   {CloseBracket}                            { return symbol(ParserSym.CLOSE_BRACKET); }
