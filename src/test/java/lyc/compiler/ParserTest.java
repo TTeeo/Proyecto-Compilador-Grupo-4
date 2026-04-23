@@ -2,6 +2,7 @@ package lyc.compiler;
 
 import java_cup.runtime.Symbol;
 import lyc.compiler.factories.ParserFactory;
+import lyc.compiler.model.InvalidNumberException;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -15,12 +16,12 @@ import static com.google.common.truth.Truth.assertThat;
 import static lyc.compiler.Constants.EXAMPLES_ROOT_DIRECTORY;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@Disabled
+//@Disabled
 public class ParserTest {
 
     @Test
     public void assignmentWithExpression() throws Exception {
-        compilationSuccessful("c=d*(e-21)/4");
+        compilationSuccessful("c:=d*(e-21)/4");
     }
 
     @Test
@@ -76,6 +77,13 @@ public class ParserTest {
     @Test
     void whileStatement() throws Exception {
         compilationSuccessful(readFromFile("while.txt"));
+    }
+
+    @Test
+    void invalidLimitOverflowInteger() {
+        assertThrows(InvalidNumberException.class, () -> {
+            compilationSuccessful("c:=32768");
+        });
     }
 
 

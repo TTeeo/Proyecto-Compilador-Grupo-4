@@ -84,7 +84,7 @@ WhiteSpace = {LineTerminator} | {Identation}
 Identifier = {Letter} ({Letter}|{Digit})*
 IntegerConstant = {Digit}+
 FloatConstant = {Digit}+\.{Digit}* | {Digit}*\.{Digit}+
-StringConstant = \"[\x20-\x7E]*\"
+StringConstant = \"[\x20-\x7E]*\" | “[\x20-\x7E]*”
 %%
 
 
@@ -134,6 +134,7 @@ StringConstant = \"[\x20-\x7E]*\"
   {OpenComment}                             { yybegin(COMMENT); }
 
 
+
   /* identifiers */
   {Identifier}                              { 
                                               if( yytext().length() > MAX_IDENTIFIER_LENGTH ){
@@ -164,6 +165,11 @@ StringConstant = \"[\x20-\x7E]*\"
                                               float valor;
                                               try{
                                                 valor = Float.parseFloat(yytext());
+                                                if (Float.isInfinite(valor) || Float.isNaN(valor)) {
+                                                  throw new InvalidNumberException(
+                                                    "El numero ingresado: " + yytext() + ", excede el rango permitido para float."
+                                                  );
+                                                }
                                               }
                                               catch( NumberFormatException e){
                                                 throw new InvalidNumberException("El numero ingresado: " + yytext() + ", excede el rango permitido para float.");

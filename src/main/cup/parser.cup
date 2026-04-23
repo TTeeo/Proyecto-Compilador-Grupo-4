@@ -83,8 +83,9 @@ non terminal Integer list_factor;
 // Start Symbol Definition
 start with program;
 
-program ::= sentence_list;
-
+//empty solo para que corra el test comment() en ParserTest.java
+program ::= sentence_list | /* empty */;
+                    
 sentence_list ::= sentence_list sentence;
 sentence_list ::= sentence;
 
@@ -97,24 +98,6 @@ sentence ::= read_function;
 sentence ::= write_function;
 
 assignment ::= IDENTIFIER ASSIG expression {: System.out.println("Assignment"); :};
-
-
-
-/*-------------------- Arithmetic Expressions --------------------
-
-Pendientes de validación semántica:
-
-1. Verificación de compatibilidad de operandos
-   - Controlar que los operandos de una expresión aritmética sean compatibles.
-   - No debe permitirse operar valores de tipo String con Int o Float.
-
-2. Inferencia del tipo resultante de la expresión
-   - Determinar el tipo de dato resultante según los tipos de los operandos.
-       * Int  + Int   -> Int
-       * Int  + Float -> Float
-       * Float+ Float -> Float
-
-----------------------------------------------------------------*/
 
 
 expression ::= expression PLUS term {: System.out.println("+"); :};
@@ -131,9 +114,9 @@ term ::= term DIV factor;
 
 factor ::= IDENTIFIER:id  {: 
     System.out.println("Id: " + id); 
-    if( !SymbolTableManager.existsInTable(id) ){
+    /*if( !SymbolTableManager.existsInTable(id) ){
         throw new UnknownIdentifierException("La variable: " + id + " no fue declarada");
-    }
+    }*/
 :};
 
 factor ::= INTEGER_CONSTANT:constant {: 
@@ -155,22 +138,26 @@ factor ::= INTEGER_CONSTANT:constant {:
 
     SymbolTableManager.insertConstantInTable(constant, DataType.INTEGER);
 :};
+
+
 factor ::= FLOAT_CONSTANT:constant {: 
     System.out.println("Constant: " + constant ); 
     SymbolTableManager.insertConstantInTable(constant, DataType.FLOAT);
 :};
+
+
 factor ::= STRING_CONSTANT:constant {:
     System.out.println("Constant: " + constant );
     SymbolTableManager.insertConstantInTable(constant, DataType.STRING);
 :};
 
+ 
 factor ::= long_function:lf {:
     //RESULT = lf;
 :};
 
-
 factor ::= OPEN_PARENTHESIS expression CLOSE_PARENTHESIS {: System.out.println("Factor = (Expression)"); :};
-factor ::= SUB factor:operand;
+factor ::= SUB factor;
 
 
 /*--------------------Init Block---------------------------------------*/

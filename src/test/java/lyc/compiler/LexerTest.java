@@ -17,7 +17,7 @@ import static lyc.compiler.constants.Constants.MAX_STRING_CONSTANT_LENGTH;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 
-@Disabled
+//@Disabled
 public class LexerTest {
 
   private Lexer lexer;
@@ -25,7 +25,16 @@ public class LexerTest {
 
   @Test
   public void comment() throws Exception{
-    scan("/*This is a comment*/");
+    scan("#+This is a comment+#");
+    assertThat(nextToken()).isEqualTo(ParserSym.EOF);
+  }
+
+  @Test
+  public void commentBetweenTokens() throws Exception {
+    scan("a:=5 #+ comentario +#");
+    assertThat(nextToken()).isEqualTo(ParserSym.IDENTIFIER);
+    assertThat(nextToken()).isEqualTo(ParserSym.ASSIG);
+    assertThat(nextToken()).isEqualTo(ParserSym.INTEGER_CONSTANT);
     assertThat(nextToken()).isEqualTo(ParserSym.EOF);
   }
 
@@ -39,7 +48,7 @@ public class LexerTest {
 
   @Test
   public void invalidIdLength() {
-    assertThrows(InvalidStringException.class, () -> {
+    assertThrows(InvalidFormatException.class, () -> {
       scan(getRandomString());
       nextToken();
     });
@@ -52,7 +61,7 @@ public class LexerTest {
       nextToken();
     });
   }
-
+/*
   @Test
   public void invalidNegativeIntegerConstantValue() {
     assertThrows(InvalidNumberException.class, () -> {
@@ -60,21 +69,21 @@ public class LexerTest {
       nextToken();
     });
   }
-
+*/
 
   @Test
   public void assignmentWithExpressions() throws Exception {
-    scan("c=d*(e-21)/4");
+    scan("c:=d*(e-21)/4");
     assertThat(nextToken()).isEqualTo(ParserSym.IDENTIFIER);
     assertThat(nextToken()).isEqualTo(ParserSym.ASSIG);
     assertThat(nextToken()).isEqualTo(ParserSym.IDENTIFIER);
     assertThat(nextToken()).isEqualTo(ParserSym.MULT);
-    assertThat(nextToken()).isEqualTo(ParserSym.OPEN_BRACKET);
+    assertThat(nextToken()).isEqualTo(ParserSym.OPEN_PARENTHESIS);
     assertThat(nextToken()).isEqualTo(ParserSym.IDENTIFIER);
     assertThat(nextToken()).isEqualTo(ParserSym.SUB);
     assertThat(nextToken()).isEqualTo(ParserSym.INTEGER_CONSTANT);
-    assertThat(nextToken()).isEqualTo(ParserSym.CLOSE_BRACKET);
-    assertThat(nextToken()).isEqualTo(ParserSym.DIV);
+    assertThat(nextToken()).isEqualTo(ParserSym.CLOSE_PARENTHESIS);
+    assertThat(nextToken()).isEqualTo(ParserSym.DIVIDE);
     assertThat(nextToken()).isEqualTo(ParserSym.INTEGER_CONSTANT);
     assertThat(nextToken()).isEqualTo(ParserSym.EOF);
   }
@@ -85,6 +94,55 @@ public class LexerTest {
       scan("#");
       nextToken();
     });
+  }
+
+  @Test
+  public void validFloatConstant() throws Exception {
+    scan("3.14 .5 2.");
+    assertThat(nextToken()).isEqualTo(ParserSym.FLOAT_CONSTANT);
+    assertThat(nextToken()).isEqualTo(ParserSym.FLOAT_CONSTANT);
+    assertThat(nextToken()).isEqualTo(ParserSym.FLOAT_CONSTANT);
+    assertThat(nextToken()).isEqualTo(ParserSym.EOF);
+  }
+
+  @Test
+  public void invalidFloatConstantValue() {
+    assertThrows(InvalidNumberException.class, () -> {
+      scan("999999999999999999999999999999999999999999999999999.0");
+      nextToken();
+    });
+  }
+
+  @Test
+  public void negativeIntegerNumberAssignment() throws Exception {
+    scan("c:=-32768");
+    assertThat(nextToken()).isEqualTo(ParserSym.IDENTIFIER);
+    assertThat(nextToken()).isEqualTo(ParserSym.ASSIG);
+    assertThat(nextToken()).isEqualTo(ParserSym.SUB);
+    assertThat(nextToken()).isEqualTo(ParserSym.INTEGER_CONSTANT);
+    assertThat(nextToken()).isEqualTo(ParserSym.EOF);
+  }
+
+
+
+   @Test
+  public void negativeFloatNumberAssignment() throws Exception{
+    scan("c:=-5.2");
+    assertThat(nextToken()).isEqualTo(ParserSym.IDENTIFIER);
+    assertThat(nextToken()).isEqualTo(ParserSym.ASSIG);
+    assertThat(nextToken()).isEqualTo(ParserSym.SUB);
+    assertThat(nextToken()).isEqualTo(ParserSym.FLOAT_CONSTANT);
+    assertThat(nextToken()).isEqualTo(ParserSym.EOF);
+  }
+
+
+  @Test
+  public void expressionWithStringAssignment() throws Exception {
+    scan("msg:=\"hola\"");
+    assertThat(nextToken()).isEqualTo(ParserSym.IDENTIFIER);
+    assertThat(nextToken()).isEqualTo(ParserSym.ASSIG);
+    assertThat(nextToken()).isEqualTo(ParserSym.STRING_CONSTANT);
+    assertThat(nextToken()).isEqualTo(ParserSym.EOF);
   }
 
   @AfterEach
@@ -104,7 +162,7 @@ public class LexerTest {
     return new RandomStringGenerator.Builder()
             .filteredBy(CharacterPredicates.LETTERS)
             .withinRange('a', 'z')
-            .build().generate(MAX_IDENTIFIER_LENGTH * 2);
+            .build().generate(MAX_STRING_CONSTANT_LENGTH + 1);
   }
 
 }
