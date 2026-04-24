@@ -1,0 +1,33 @@
+NOMBRE                                                        TIPODATO    VALOR                                               LONGITUD  
+p1                                                            STRING      -                                                   -         
+__STRING_ewr                                                  STRING      ewr                                                 3         
+p2                                                            STRING      -                                                   -         
+p3                                                            STRING      -                                                   -         
+__INTEGER_27                                                  INTEGER     27                                                  -         
+__STRING_a es mas chico o igual a b                           STRING      a es mas chico o igual a b                          26        
+b1                                                            FLOAT       -                                                   -         
+__STRING_a es mas grande que b o c es mas grande que b        STRING      a es mas grande que b o c es mas grande que b       45        
+var1                                                          STRING      -                                                   -         
+__FLOAT_99999.99                                              FLOAT       99999.99                                            -         
+__STRING_a es mas grande que b                                STRING      a es mas grande que b                               21        
+variable1                                                     INTEGER     -                                                   -         
+a                                                             FLOAT       -                                                   -         
+__INTEGER_34                                                  INTEGER     34                                                  -         
+__STRING_a es mas grande que b y c es mas grande que b        STRING      a es mas grande que b y c es mas grande que b       45        
+b                                                             STRING      -                                                   -         
+__STRING_@sdADaSjfla%dfg                                      STRING      @sdADaSjfla%dfg                                     15        
+__STRING_a no es mas grande que b                             STRING      a no es mas grande que b                            24        
+c                                                             INTEGER     -                                                   -         
+__STRING_asldk  fh sjf                                        STRING      asldk  fh sjf                                       13        
+a1                                                            FLOAT       -                                                   -         
+__INTEGER_1                                                   INTEGER     1                                                   -         
+__INTEGER_2                                                   INTEGER     2                                                   -         
+__INTEGER_3                                                   INTEGER     3                                                   -         
+__INTEGER_4                                                   INTEGER     4                                                   -         
+__INTEGER_500                                                 INTEGER     500                                                 -         
+__FLOAT_0.9999                                                FLOAT       0.9999                                              -         
+__STRING_lista es mas grande que 3                            STRING      lista es mas grande que 3                           25        
+x                                                             INTEGER     -                                                   -         
+__FLOAT_99.0                                                  FLOAT       99.0                                                -         
+y                                                             INTEGER     -                                                   -         
+z                                                             INTEGER     -                                                   -         

@@ -1,0 +1,101 @@
+#+-----------------Comments----------------+#
+
+#+ Esto es un comentario +#
+
+#+ 
+  Esto es un comentario 
+  #+ 
+    De mas de un nivel
+  +#    
++#
+
+#+-----------------Init----------------+#
+
+init {
+    a, a1, b1 : Float
+    variable1, c, x, y, z: Int
+    p1, p2, p3, b, var1 : String
+}
+
+#+-----------------Arithmetic----------------+#
+
+x := 27 - a1
+x := b1 + 500
+x := 34 * 3
+x := variable1 / b1 
+
+
+#+-----------------Assignment----------------+#
+
+a := 99999.99
+a := 99.
+a := .9999
+
+b := "@sdADaSjfla%dfg"
+b := "asldk  fh sjf"
+
+#+-----------------And----------------+#
+
+a := 1
+b := 1
+c := 2
+
+if (a > b AND c > b)
+{
+    write("a es mas grande que b y c es mas grande que b")
+}
+
+
+#+-----------------Or----------------+#
+
+if (a > b OR c > b)
+{
+    write("a es mas grande que b o c es mas grande que b")
+}
+
+
+#+-----------------Not----------------+#
+
+if (NOT a > b)
+{
+    write("a no es mas grande que b")
+}
+
+#+-----------------Read----------------+#
+
+read(base) #+ base es una variable +#
+
+#+-----------------Write----------------+#
+
+write("ewr")  #+ “ewr” es una cte string +#
+write(var1)  #+ var1 es una variable numérica definida previamente +#
+
+#+-----------------If/Else----------------+#
+
+if (a > b)
+{
+    write("a es mas grande que b")
+}
+else
+{
+    write("a es mas chico o igual a b")
+}
+
+
+#+-----------------While----------------+#
+
+
+while (a > b)
+{
+    write("a es mas grande que b")
+    a := a + 1
+}
+
+
+#+-----------------Long Function----------------+#
+
+
+if (long([1+2, 3*4, x, y+z]) > 3) 
+{
+    write("lista es mas grande que 3")
+}
